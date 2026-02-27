@@ -75,10 +75,11 @@ export default function LikesPage() {
                 </div>
 
                 {isLoading ? (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 animate-pulse">
-                        {[1, 2, 3, 4].map((n) => (
-                            <div key={n} className="h-[250px] sm:h-[380px] bg-muted rounded-lg" />
-                        ))}
+                    <div className="flex flex-col items-center justify-center py-24 sm:py-32 animate-in fade-in duration-700">
+                        <div className="w-8 h-8 border-2 border-primary/20 border-t-primary rounded-full animate-spin mb-4" />
+                        <h2 className="text-xl sm:text-2xl font-medium text-muted-foreground animate-pulse">
+                            Loading our finds...
+                        </h2>
                     </div>
                 ) : !isLoggedIn ? (
                     <div className="text-center py-20 bg-muted/30 rounded-2xl border border-dashed">

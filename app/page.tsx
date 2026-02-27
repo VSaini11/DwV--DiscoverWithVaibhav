@@ -185,10 +185,11 @@ export default function Home() {
       {/* Product Grid */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {isLoading ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 animate-pulse">
-            {[1, 2, 3, 4].map((n) => (
-              <div key={n} className="h-[250px] sm:h-[350px] bg-muted rounded-lg" />
-            ))}
+          <div className="flex flex-col items-center justify-center py-24 sm:py-32 animate-in fade-in duration-700">
+            <div className="w-8 h-8 border-2 border-primary/20 border-t-primary rounded-full animate-spin mb-4" />
+            <h2 className="text-xl sm:text-2xl font-medium text-muted-foreground animate-pulse">
+              Loading our finds...
+            </h2>
           </div>
         ) : products.length > 0 ? (
           <>
