@@ -39,7 +39,7 @@ export async function POST(req: Request) {
         const product = await Product.create(body)
 
         // Notify all subscribers in the background (don't await to keep response fast)
-        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dwv-brand.vercel.app'
         Subscriber.find({}).then(async (subscribers) => {
             if (subscribers.length === 0) return
             const emailHtml = buildProductNotificationEmail(product.name, product.image, siteUrl)

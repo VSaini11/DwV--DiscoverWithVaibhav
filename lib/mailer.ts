@@ -1,15 +1,18 @@
 import nodemailer from 'nodemailer'
 
 export const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.GMAIL_USER,
-        pass: process.env.GMAIL_APP_PASSWORD,
-    },
+  service: 'gmail',
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_APP_PASSWORD,
+  },
 })
 
 export function buildProductNotificationEmail(productName: string, productImage: string, siteUrl: string) {
-    return `
+  // Base64 images don't render in email clients — only use real http/https URLs
+  const isValidImageUrl = productImage && productImage.startsWith('http')
+
+  return `
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -33,12 +36,13 @@ export function buildProductNotificationEmail(productName: string, productImage:
                 </td>
               </tr>
 
-              <!-- Hero image -->
-              ${productImage ? `
+              <!-- Hero image (only rendered if image is a real URL, not Base64) -->
+              ${isValidImageUrl ? `
               <tr>
                 <td style="padding:0;">
                   <img src="${productImage}" alt="${productName}"
-                    style="width:100%;max-height:320px;object-fit:cover;display:block;" />
+                    width="600"
+                    style="width:100%;max-width:600px;height:auto;display:block;border:0;" />
                 </td>
               </tr>` : ''}
 
