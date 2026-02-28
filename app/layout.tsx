@@ -7,9 +7,9 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'DiscoverWithVaibhav - Viral Fashion Finds',
-  description: 'Discover viral fashion finds before everyone else. Handpicked trending styles curated from Pinterest. Explore our collection of women\'s, men\'s, streetwear, and accessories.',
-  keywords: ['Trending fashion', 'Pinterest finds', 'viral styles', 'aesthetic outfit ideas', 'DiscoverWithVaibhav', 'streetwear', 'curated fashion'],
+  title: 'DwV - Men\'s Style & Fragrance Discovery',
+  description: 'DwV is a curated men’s style discovery platform for trending outfits and fragrances. Handpicked aesthetic styles to help you find the best fashion in one place.',
+  keywords: ['DwV', 'DiscoverWithVaibhav', 'men\'s style discovery', 'trending outfits for men', 'men\'s fragrance curation', 'menswear trends', 'fashion discovery platform', 'curated fashion outfits', 'best fragrances for men', 'Pinterest fashion for men', 'aesthetic outfits for guys'],
   authors: [{ name: 'Vaibhav' }],
   metadataBase: new URL('https://dwv-brand.vercel.app/'),
   alternates: {
@@ -17,8 +17,8 @@ export const metadata: Metadata = {
   },
   manifest: '/site.webmanifest',
   openGraph: {
-    title: 'DiscoverWithVaibhav - Viral Fashion Finds',
-    description: 'Discover viral fashion finds before everyone else. Handpicked trending styles curated from Pinterest.',
+    title: 'DwV - Men\'s Style & Fragrance Discovery',
+    description: 'DwV is a curated men’s style discovery platform for trending outfits and fragrances. Handpicked aesthetic styles to help you find the best fashion in one place.',
     url: 'https://dwv-brand.vercel.app/',
     siteName: 'DiscoverWithVaibhav',
     images: [
@@ -34,8 +34,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'DiscoverWithVaibhav - Viral Fashion Finds',
-    description: 'Discover viral fashion finds before everyone else. Handpicked trending styles curated from Pinterest.',
+    title: 'DwV - Men\'s Style & Fragrance Discovery',
+    description: 'DwV is a curated men’s style discovery platform for trending outfits and fragrances.',
     images: ['/hero-image.png'],
   },
   verification: {

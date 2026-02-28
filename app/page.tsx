@@ -132,9 +132,9 @@ export default function Home() {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'DiscoverWithVaibhav',
+    name: 'DwV - DiscoverWithVaibhav',
     url: 'https://dwv-brand.vercel.app/',
-    description: 'Discover viral fashion finds before everyone else. Handpicked trending styles curated from Pinterest.',
+    description: 'DwV is a curated men’s style discovery platform for trending outfits and fragrances. Handpicked aesthetic styles to help you find the best fashion in one place.',
     potentialAction: {
       '@type': 'SearchAction',
       target: 'https://dwv-brand.vercel.app/?query={search_term_string}',

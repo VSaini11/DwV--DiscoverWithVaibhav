@@ -1,7 +1,7 @@
 {
     "name": "DiscoverWithVaibhav",
     "short_name": "DwV",
-    "description": "Discover viral fashion finds before everyone else.",
+    "description": "DwV is a curated men’s style discovery platform for trending outfits and fragrances.",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#ffffff",
