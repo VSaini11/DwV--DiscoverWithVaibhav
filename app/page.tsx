@@ -129,8 +129,25 @@ export default function Home() {
     window.open(url, '_blank')
   }
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'DiscoverWithVaibhav',
+    url: 'https://dwv-brand.vercel.app/',
+    description: 'Discover viral fashion finds before everyone else. Handpicked trending styles curated from Pinterest.',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: 'https://dwv-brand.vercel.app/?query={search_term_string}',
+      'query-input': 'required name=search_term_string',
+    },
+  }
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Hero Section */}
       <Hero />
 
