@@ -15,6 +15,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/',
   },
+  manifest: '/site.webmanifest',
   openGraph: {
     title: 'DiscoverWithVaibhav - Viral Fashion Finds',
     description: 'Discover viral fashion finds before everyone else. Handpicked trending styles curated from Pinterest.',
@@ -53,12 +54,13 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      {
-        url: '/logo.svg',
-        type: 'image/svg+xml',
-      },
+      { url: '/logo.svg', type: 'image/svg+xml' },
+      { url: '/icon-light-32x32.png', sizes: '32x32', type: 'image/png', media: '(prefers-color-scheme: light)' },
+      { url: '/icon-dark-32x32.png', sizes: '32x32', type: 'image/png', media: '(prefers-color-scheme: dark)' },
     ],
-    apple: '/logo.svg',
+    apple: [
+      { url: '/logo.svg', type: 'image/svg+xml' },
+    ],
   },
 }
 
