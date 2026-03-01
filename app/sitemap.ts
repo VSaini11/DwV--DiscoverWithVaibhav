@@ -1,24 +1,25 @@
 import { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-    const baseUrl = 'https://dwv-brand.vercel.app'
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dwv-brand.vercel.app'
+    const today = new Date()
 
     return [
         {
             url: baseUrl,
-            lastModified: new URLSearchParams().get('t') || new Date(),
+            lastModified: today,
             changeFrequency: 'daily',
             priority: 1,
         },
         {
             url: `${baseUrl}/coming-soon`,
-            lastModified: new Date(),
+            lastModified: today,
             changeFrequency: 'monthly',
             priority: 0.8,
         },
         {
             url: `${baseUrl}/likes`,
-            lastModified: new Date(),
+            lastModified: today,
             changeFrequency: 'weekly',
             priority: 0.5,
         },
