@@ -2,11 +2,11 @@ import { MetadataRoute } from 'next'
 
 export default function sitemap(): MetadataRoute.Sitemap {
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dwv-brand.vercel.app'
-    const today = new Date()
+    const today = new Date().toISOString().split('T')[0]
 
     return [
         {
-            url: baseUrl,
+            url: `${baseUrl}/`,
             lastModified: today,
             changeFrequency: 'daily',
             priority: 1,
