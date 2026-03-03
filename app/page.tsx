@@ -150,13 +150,16 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       {/* Hero Section */}
-      <Hero />
+      <Hero
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+      />
 
       {/* Deal of the Day Section */}
       <DealOfTheDay />
 
       {/* Discovery Header */}
-      <div className="bg-white/80 backdrop-blur-md border-b">
+      <div id="products-section" className="bg-white/80 backdrop-blur-md border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-6">
             <h1 className="text-lg sm:text-2xl font-semibold tracking-tight text-foreground">

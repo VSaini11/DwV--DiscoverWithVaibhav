@@ -133,8 +133,8 @@ export default function Footer() {
               © {currentYear} DiscoverWithVaibhav. All rights reserved. Fashion curated with love from Pinterest.
             </p>
             <div className="flex gap-6 text-xs font-medium uppercase tracking-wider">
-              <a href="#" className="hover:text-white transition-colors">Privacy</a>
-              <a href="#" className="hover:text-white transition-colors">Terms</a>
+              <a href="/privacy" className="hover:text-white transition-colors">Privacy</a>
+              <a href="/terms" className="hover:text-white transition-colors">Terms</a>
             </div>
           </div>
         </div>

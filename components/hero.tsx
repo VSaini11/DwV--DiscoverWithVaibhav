@@ -5,11 +5,30 @@ import { useState, useEffect, useCallback } from 'react'
 import AuthModal from './auth-modal'
 import { useRouter } from 'next/navigation'
 
-export default function Hero() {
+interface HeroProps {
+  searchQuery: string
+  setSearchQuery: (query: string) => void
+}
+
+export default function Hero({ searchQuery, setSearchQuery }: HeroProps) {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
   const [user, setUser] = useState<any>(null)
   const [activeSlide, setActiveSlide] = useState(0)
   const router = useRouter()
+
+  const scrollToProducts = () => {
+    const element = document.getElementById('products-section')
+    if (element) {
+      const headerOffset = 100
+      const elementPosition = element.getBoundingClientRect().top
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      })
+    }
+  }
 
   const slides = [
     {
@@ -20,10 +39,7 @@ export default function Hero() {
       image: "/hero-image.png",
       bg: "#f4f7f9",
       buttonText: "Discover Now",
-      action: () => {
-        const element = document.getElementById('products-section')
-        element?.scrollIntoView({ behavior: 'smooth' })
-      }
+      action: scrollToProducts
     },
     {
       id: 2,
@@ -49,6 +65,16 @@ export default function Hero() {
       action: () => {
         window.open('https://www.instagram.com/dwvfinds_official?igsh=MWxlaTlqazBicWMzMQ==', '_blank')
       }
+    },
+    {
+      id: 4,
+      title: "Finds that",
+      subtitle: "Fits you",
+      description: "Curated styles tailored to your unique personality. Discover the fashion that truly speaks to you.",
+      bg: "#ffffff",
+      buttonText: "Explore Collection",
+      isTextOnly: true,
+      action: scrollToProducts
     }
   ]
 
@@ -75,6 +101,14 @@ export default function Hero() {
     localStorage.removeItem('dv_user')
     setUser(null)
     router.push('/')
+  }
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value)
+    // Optionally scroll to products section on search if it starts a search
+    if (e.target.value) {
+      scrollToProducts()
+    }
   }
 
   return (
@@ -115,12 +149,14 @@ export default function Hero() {
               type="text"
               placeholder="Search store..."
               className="ml-3 bg-transparent border-none text-sm text-gray-600 focus:outline-none placeholder-gray-400 w-full max-w-[150px]"
+              value={searchQuery}
+              onChange={handleSearchChange}
             />
           </div>
 
           {/* Center: Logo — exact center on desktop via absolute, left on mobile */}
           <div className="sm:absolute sm:left-1/2 sm:-translate-x-1/2">
-            <span className="text-xl sm:text-2xl md:text-3xl font-serif font-light tracking-tighter text-gray-900 cursor-pointer">
+            <span className="text-xl sm:text-2xl md:text-3xl font-serif font-light tracking-tighter text-gray-900 cursor-pointer text-center block">
               <span className="font-bold italic text-red-600">DwV</span>
             </span>
           </div>
@@ -177,28 +213,53 @@ export default function Hero() {
               }`}
             style={{ backgroundColor: slide.bg }}
           >
-            <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-center">
+            {/* Creative background elements for text-only slides */}
+            {slide.isTextOnly && (
+              <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                <div className="absolute top-1/4 -left-12 w-64 h-64 bg-red-50 rounded-full blur-3xl opacity-50 animate-pulse" />
+                <div className="absolute bottom-1/4 -right-12 w-96 h-96 bg-gray-50 rounded-full blur-3xl opacity-50 animate-pulse delay-700" />
+              </div>
+            )}
+
+            <div className={`max-w-7xl mx-auto w-full ${slide.isTextOnly ? 'flex flex-col items-center text-center' : 'grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 items-center'}`}>
               <div
-                className={`z-10 text-center lg:text-left space-y-4 sm:space-y-6 transition-all duration-1000 delay-300 ${index === activeSlide ? 'translate-x-0 opacity-100' : '-translate-x-12 opacity-0'
+                className={`z-10 ${slide.isTextOnly ? 'max-w-4xl space-y-10' : 'text-center lg:text-left space-y-4 sm:space-y-6'} transition-all duration-1000 delay-300 ${index === activeSlide ? 'translate-x-0 opacity-100' : slide.isTextOnly ? 'translate-y-12 opacity-0' : '-translate-x-12 opacity-0'
                   }`}
               >
-                <div className="space-y-0 sm:space-y-1">
-                  <h2 className="text-4xl sm:text-6xl md:text-8xl font-light tracking-tight text-gray-900 leading-none">
-                    {slide.title}
-                  </h2>
-                  <h2 className="text-5xl sm:text-7xl md:text-9xl font-bold tracking-tight text-gray-900 leading-none">
-                    {slide.subtitle}
-                  </h2>
+                <div className="space-y-0">
+                  {slide.isTextOnly ? (
+                    <div className="space-y-2">
+                      <p className="text-red-600 font-bold tracking-[0.3em] text-xs sm:text-sm uppercase mb-4 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+                        Curated for You
+                      </p>
+                      <h2 className="text-6xl sm:text-8xl md:text-[7rem] lg:text-[9rem] font-playfair font-light italic tracking-tight text-gray-900 leading-[0.85] mb-2">
+                        Finds <span className="font-normal not-italic">that</span>
+                      </h2>
+                      <h2 className="text-7xl sm:text-9xl md:text-[9rem] lg:text-[11rem] font-playfair font-black tracking-tighter text-gray-900 leading-[0.85] uppercase">
+                        Fits <span className="text-red-600">you.</span>
+                      </h2>
+                    </div>
+                  ) : (
+                    <>
+                      <h2 className="text-4xl sm:text-6xl md:text-8xl font-light tracking-tight text-gray-900 leading-none">
+                        {slide.title}
+                      </h2>
+                      <h2 className="text-5xl sm:text-7xl md:text-9xl font-bold tracking-tight text-gray-900 leading-none">
+                        {slide.subtitle}
+                      </h2>
+                    </>
+                  )}
                 </div>
 
-                <p className="text-gray-600 text-sm sm:text-lg max-w-md mx-auto lg:mx-0 font-medium">
+                <p className={`text-gray-600 text-sm sm:text-lg lg:text-xl ${slide.isTextOnly ? 'max-w-2xl font-light italic' : 'max-w-md font-medium'} mx-auto ${slide.isTextOnly ? '' : 'lg:mx-0'}`}>
                   {slide.description}
                 </p>
 
-                <div className="pt-2 sm:pt-4 flex justify-center lg:justify-start">
+                <div className={`pt-4 sm:pt-8 flex justify-center ${slide.isTextOnly ? '' : 'lg:justify-start'}`}>
                   <Button
                     onClick={slide.action}
-                    className="px-8 sm:px-10 py-6 sm:py-7 text-xs sm:text-sm font-bold bg-black text-white hover:bg-gray-800 transition-all rounded-none uppercase tracking-widest active:scale-95 group"
+                    className={`px-10 sm:px-12 py-7 sm:py-8 text-xs sm:text-sm font-bold transition-all rounded-none uppercase tracking-widest active:scale-95 group ${slide.isTextOnly ? 'bg-red-600 text-white hover:bg-black shadow-2xl shadow-red-200' : 'bg-black text-white hover:bg-gray-800'
+                      }`}
                   >
                     {'icon' in slide && slide.icon}
                     {slide.buttonText}
@@ -206,18 +267,22 @@ export default function Hero() {
                 </div>
               </div>
 
-              <div
-                className={`relative z-0 flex justify-center lg:justify-end transition-all duration-1000 delay-500 ${index === activeSlide ? 'translate-x-0 opacity-100' : 'translate-x-12 opacity-0'
-                  }`}
-              >
-                <div className="relative w-full max-w-[320px] sm:max-w-[480px] lg:max-w-[600px] aspect-[4/5] lg:aspect-square">
-                  <img
-                    src={slide.image}
-                    alt={slide.subtitle}
-                    className="w-full h-full object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-700"
-                  />
+              {!slide.isTextOnly && (
+                <div
+                  className={`relative z-0 flex justify-center lg:justify-end transition-all duration-1000 delay-500 ${index === activeSlide ? 'translate-x-0 opacity-100' : 'translate-x-12 opacity-0'
+                    }`}
+                >
+                  <div className="relative w-full max-w-[320px] sm:max-w-[480px] lg:max-w-[600px] aspect-[4/5] lg:aspect-square">
+                    {'image' in slide && (
+                      <img
+                        src={slide.image as string}
+                        alt={slide.subtitle}
+                        className="w-full h-full object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-700"
+                      />
+                    )}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         ))}
