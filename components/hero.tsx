@@ -6,8 +6,8 @@ import AuthModal from './auth-modal'
 import { useRouter } from 'next/navigation'
 
 interface HeroProps {
-  searchQuery: string
-  setSearchQuery: (query: string) => void
+  searchQuery?: string
+  setSearchQuery?: (query: string) => void
 }
 
 export default function Hero({ searchQuery, setSearchQuery }: HeroProps) {
@@ -104,10 +104,12 @@ export default function Hero({ searchQuery, setSearchQuery }: HeroProps) {
   }
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value)
-    // Optionally scroll to products section on search if it starts a search
-    if (e.target.value) {
-      scrollToProducts()
+    if (setSearchQuery) {
+      setSearchQuery(e.target.value)
+      // Optionally scroll to products section on search if it starts a search
+      if (e.target.value) {
+        scrollToProducts()
+      }
     }
   }
 
