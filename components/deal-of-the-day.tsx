@@ -55,14 +55,14 @@ export default function DealOfTheDay() {
     if (deals.length === 0) return null
 
     return (
-        <section className="max-w-7xl mx-auto px-0 sm:px-6 lg:px-8 py-1 sm:py-24">
+        <section className="max-w-7xl mx-auto px-0 sm:px-6 lg:px-8 py-12 sm:py-24">
             <div className="px-4 sm:px-0">
-                <div className="flex items-center justify-between mb-1 sm:mb-16">
-                    <div className="space-y-0.5">
-                        <h2 className="text-base sm:text-5xl md:text-6xl font-playfair font-black tracking-tight text-foreground italic">
+                <div className="flex items-center justify-between mb-8 sm:mb-16">
+                    <div className="space-y-1">
+                        <h2 className="text-3xl sm:text-5xl md:text-6xl font-playfair font-black tracking-tight text-foreground italic leading-tight">
                             Deal of the <span className="text-red-600 not-italic">Day</span>
                         </h2>
-                        <div className="h-0.5 w-8 sm:h-1.5 sm:w-24 bg-red-600 rounded-full" />
+                        <div className="h-1 w-12 sm:h-1.5 sm:w-24 bg-red-600 rounded-full" />
                     </div>
                 </div>
 
@@ -73,17 +73,17 @@ export default function DealOfTheDay() {
                     }}
                     className="w-full"
                 >
-                    <CarouselContent className="-ml-1 sm:-ml-6">
+                    <CarouselContent className="-ml-2 sm:-ml-6">
                         {deals.map((deal) => (
-                            <CarouselItem key={deal._id} className="pl-1 sm:pl-6 basis-[82%] sm:basis-[48%] lg:basis-[24%]">
+                            <CarouselItem key={deal._id} className="pl-2 sm:pl-6 basis-[85%] sm:basis-[48%] lg:basis-[24%]">
                                 <div
-                                    className="group relative w-full max-w-[280px] mx-auto aspect-[4/5] rounded-xl sm:rounded-3xl overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-500 border border-white/10 bg-[#f8f8f8]"
+                                    className="group relative w-full max-w-[320px] mx-auto aspect-[4/5] rounded-3xl overflow-hidden cursor-pointer shadow-md hover:shadow-xl transition-all duration-500 border border-black/[0.03] bg-[#fdfdfd]"
                                     onClick={() => window.open(deal.link, '_blank')}
                                 >
                                     <img
                                         src={deal.image}
                                         alt={deal.title}
-                                        className="w-full h-full object-contain sm:object-cover transition-transform duration-700 group-hover:scale-110"
+                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-100 sm:opacity-80 sm:group-hover:opacity-90 transition-opacity" />
 
