@@ -50,7 +50,7 @@ export default function Hero({ searchQuery, setSearchQuery }: HeroProps) {
       bg: "#fdf8f6",
       buttonText: "Shop the Look",
       action: () => {
-        window.open('https://amzn.in/d/0bGmvkaM', '_blank')
+        window.open('https://amzn.to/4smffny', '_blank')
       }
     },
     {
