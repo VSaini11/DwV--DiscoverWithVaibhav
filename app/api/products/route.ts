@@ -35,10 +35,9 @@ export async function POST(req: Request) {
         await dbConnect()
         const body = await req.json()
 
-        // In a real app, verify Admin JWT here
         const product = await Product.create(body)
 
-        // Notify all subscribers in the background (don't await to keep response fast)
+        // Notify all subscribers in the background
         const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dwv-brand.vercel.app'
         Subscriber.find({}).then(async (subscribers) => {
             if (subscribers.length === 0) return
@@ -60,5 +59,49 @@ export async function POST(req: Request) {
     } catch (error) {
         console.error('Create product error:', error)
         return NextResponse.json({ error: 'Failed to create product' }, { status: 400 })
+    }
+}
+
+export async function PUT(req: Request) {
+    try {
+        await dbConnect()
+        const body = await req.json()
+        const { _id, ...updateData } = body
+
+        if (!_id) {
+            return NextResponse.json({ error: 'Product ID required' }, { status: 400 })
+        }
+
+        const product = await Product.findByIdAndUpdate(_id, updateData, { new: true })
+        if (!product) {
+            return NextResponse.json({ error: 'Product not found' }, { status: 404 })
+        }
+
+        return NextResponse.json(product)
+    } catch (error) {
+        console.error('Update product error:', error)
+        return NextResponse.json({ error: 'Failed to update product' }, { status: 400 })
+    }
+}
+
+export async function DELETE(req: Request) {
+    try {
+        await dbConnect()
+        const { searchParams } = new URL(req.url)
+        const id = searchParams.get('id')
+
+        if (!id) {
+            return NextResponse.json({ error: 'Product ID required' }, { status: 400 })
+        }
+
+        const product = await Product.findByIdAndDelete(id)
+        if (!product) {
+            return NextResponse.json({ error: 'Product not found' }, { status: 404 })
+        }
+
+        return NextResponse.json({ message: 'Product deleted successfully' })
+    } catch (error) {
+        console.error('Delete product error:', error)
+        return NextResponse.json({ error: 'Failed to delete product' }, { status: 500 })
     }
 }

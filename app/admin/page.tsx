@@ -19,6 +19,29 @@ interface DealSlot {
     link: string
 }
 
+interface Product {
+    _id: string
+    name: string
+    description: string
+    category: string
+    image: string
+    pinterestUrl: string
+    isTrending: boolean
+}
+
+interface HeroSlide {
+    _id?: string
+    title: string
+    subtitle: string
+    description: string
+    image?: string
+    bg: string
+    buttonText: string
+    buttonLink: string
+    isTextOnly: boolean
+    order: number
+}
+
 const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'admin123'
 
 export default function AdminPage() {
@@ -28,7 +51,23 @@ export default function AdminPage() {
     const [passwordError, setPasswordError] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [imagePreview, setImagePreview] = useState<string | null>(null)
-    const [activeTab, setActiveTab] = useState<'products' | 'deals'>('products')
+    const [activeTab, setActiveTab] = useState<'products' | 'deals' | 'hero'>('products')
+    const [filterCategory, setFilterCategory] = useState<string>('all')
+    const [products, setProducts] = useState<Product[]>([])
+    const [editingProduct, setEditingProduct] = useState<Product | null>(null)
+    const [heroSlides, setHeroSlides] = useState<HeroSlide[]>([])
+    const [editingHero, setEditingHero] = useState<HeroSlide | null>(null)
+    const [heroForm, setHeroForm] = useState<HeroSlide>({
+        title: '',
+        subtitle: '',
+        description: '',
+        image: '',
+        bg: '#f4f7f9',
+        buttonText: 'Discover Now',
+        buttonLink: '',
+        isTextOnly: false,
+        order: 0
+    })
     const [deals, setDeals] = useState<DealSlot[]>([
         { slot: 1, title: '', image: '', link: '' },
         { slot: 2, title: '', image: '', link: '' },
@@ -47,8 +86,34 @@ export default function AdminPage() {
     useEffect(() => {
         if (isAuthenticated) {
             fetchDeals()
+            fetchHeroSlides()
+            fetchProducts()
         }
     }, [isAuthenticated])
+
+    const fetchProducts = async () => {
+        try {
+            const res = await fetch('/api/products')
+            if (res.ok) {
+                const data = await res.json()
+                setProducts(data)
+            }
+        } catch (error) {
+            console.error('Failed to fetch products', error)
+        }
+    }
+
+    const fetchHeroSlides = async () => {
+        try {
+            const res = await fetch('/api/hero')
+            if (res.ok) {
+                const data = await res.json()
+                setHeroSlides(data)
+            }
+        } catch (error) {
+            console.error('Failed to fetch hero slides', error)
+        }
+    }
 
     const fetchDeals = async () => {
         try {
@@ -162,17 +227,17 @@ export default function AdminPage() {
         setIsSubmitting(true)
 
         try {
+            const method = editingProduct ? 'PUT' : 'POST'
+            const payload = {
+                ...formData,
+                image: imagePreview,
+                _id: editingProduct?._id
+            }
+
             const res = await fetch('/api/products', {
-                method: 'POST',
+                method,
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    name: formData.name,
-                    description: formData.description,
-                    category: formData.category,
-                    image: imagePreview,
-                    pinterestUrl: formData.pinterestUrl,
-                    isTrending: true
-                }),
+                body: JSON.stringify(payload),
             })
 
             if (!res.ok) {
@@ -180,16 +245,57 @@ export default function AdminPage() {
                 throw new Error(errorData.error || 'Failed to save product');
             }
 
-            toast.success('Successfully added product!')
-            router.push('/')
+            toast.success(editingProduct ? 'Successfully updated product!' : 'Successfully added product!')
+
+            // Reset form
+            setFormData({
+                name: '',
+                description: '',
+                category: '',
+                pinterestUrl: '',
+                isTrending: false
+            })
+            setImagePreview(null)
+            setEditingProduct(null)
+            fetchProducts()
+
+            if (!editingProduct) {
+                router.push('/')
+            }
         } catch (error: any) {
             console.error('Save failed', error)
-            toast.error('Error adding product', {
+            toast.error(editingProduct ? 'Error updating product' : 'Error adding product', {
                 description: error.message || 'Please try again.'
             })
         } finally {
             setIsSubmitting(false)
         }
+    }
+
+    const deleteProduct = async (id: string) => {
+        if (!confirm('Are you sure you want to delete this product?')) return
+
+        try {
+            const res = await fetch(`/api/products?id=${id}`, { method: 'DELETE' })
+            if (!res.ok) throw new Error('Failed to delete product')
+            toast.success('Product deleted successfully')
+            fetchProducts()
+        } catch (error: any) {
+            toast.error('Error deleting product', { description: error.message })
+        }
+    }
+
+    const handleEditProduct = (product: Product) => {
+        setEditingProduct(product)
+        setFormData({
+            name: product.name,
+            description: product.description,
+            category: product.category,
+            pinterestUrl: product.pinterestUrl,
+            isTrending: product.isTrending
+        })
+        setImagePreview(product.image)
+        window.scrollTo({ top: 0, behavior: 'smooth' })
     }
 
     const handleDealSubmit = async (slot: number) => {
@@ -228,6 +334,69 @@ export default function AdminPage() {
         }
     }
 
+    const handleHeroSubmit = async (e: React.FormEvent) => {
+        e.preventDefault()
+        setIsSubmitting(true)
+
+        try {
+            const res = await fetch('/api/hero', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(heroForm),
+            })
+
+            if (!res.ok) throw new Error('Failed to save hero slide')
+
+            toast.success(heroForm._id ? 'Hero Slide Updated!' : 'Hero Slide Added!')
+            fetchHeroSlides()
+            setEditingHero(null)
+            setHeroForm({
+                title: '',
+                subtitle: '',
+                description: '',
+                image: '',
+                bg: '#f4f7f9',
+                buttonText: 'Discover Now',
+                buttonLink: '',
+                isTextOnly: false,
+                order: heroSlides.length
+            })
+        } catch (error: any) {
+            toast.error('Error saving hero slide', { description: error.message })
+        } finally {
+            setIsSubmitting(false)
+        }
+    }
+
+    const deleteHeroSlide = async (id: string) => {
+        if (!confirm('Are you sure you want to delete this hero slide?')) return
+
+        try {
+            const res = await fetch(`/api/hero?id=${id}`, { method: 'DELETE' })
+            if (!res.ok) throw new Error('Failed to delete slide')
+            toast.success('Slide Deleted')
+            fetchHeroSlides()
+        } catch (error: any) {
+            toast.error('Error deleting slide', { description: error.message })
+        }
+    }
+
+    const importOriginalSlides = async () => {
+        if (!confirm('This will replace all your current slides with the 4 original slides. Continue?')) return
+        setIsSubmitting(true)
+
+        try {
+            const res = await fetch('/api/hero', { method: 'PATCH' })
+            if (!res.ok) throw new Error('Failed to import')
+            toast.success('Original Slides Imported!')
+            fetchHeroSlides()
+        } catch (error: any) {
+            toast.error('Import failed', { description: error.message })
+        } finally {
+            setIsSubmitting(false)
+        }
+    }
+
     return (
         <div className="min-h-screen bg-background flex flex-col">
             <Hero />
@@ -260,6 +429,15 @@ export default function AdminPage() {
                             <ShoppingCart className="w-4 h-4" />
                             Deals of the Day
                         </Button>
+                        <Button
+                            variant={activeTab === 'hero' ? 'default' : 'ghost'}
+                            size="sm"
+                            className="rounded-lg gap-2"
+                            onClick={() => setActiveTab('hero')}
+                        >
+                            <ImageIcon className="w-4 h-4" />
+                            Hero Section
+                        </Button>
                     </div>
                 </div>
 
@@ -268,9 +446,9 @@ export default function AdminPage() {
                         <div className="p-8 border-b bg-muted/30">
                             <h1 className="text-2xl font-semibold text-foreground flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center">
-                                    <Plus className="w-6 h-6" />
+                                    <LayoutGrid className="w-6 h-6" />
                                 </div>
-                                Add New Product
+                                {editingProduct ? 'Edit Product' : 'Add New Product'}
                             </h1>
                             <p className="text-muted-foreground mt-2">
                                 Enter the details of the viral fashion find you discovered on Pinterest.
@@ -392,12 +570,90 @@ export default function AdminPage() {
                                     className="w-full h-12 rounded-xl text-lg font-medium shadow-lg hover:shadow-xl transition-all"
                                     disabled={isSubmitting}
                                 >
-                                    {isSubmitting ? 'Adding Find...' : 'Add Style to Discoveries'}
+                                    {isSubmitting ? (editingProduct ? 'Updating...' : 'Adding Find...') : (editingProduct ? 'Update Product' : 'Add Style to Discoveries')}
                                 </Button>
+                                {editingProduct && (
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        className="w-full mt-3 h-12 rounded-xl font-medium"
+                                        onClick={() => {
+                                            setEditingProduct(null)
+                                            setFormData({
+                                                name: '',
+                                                description: '',
+                                                category: '',
+                                                pinterestUrl: '',
+                                                isTrending: false
+                                            })
+                                            setImagePreview(null)
+                                        }}
+                                    >
+                                        Cancel Edit
+                                    </Button>
+                                )}
                             </div>
                         </form>
+
+                        <div className="p-8 border-t bg-muted/10">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                                <h3 className="text-xl font-semibold flex items-center gap-2">
+                                    <LayoutGrid className="w-5 h-5 text-primary" />
+                                    Existing Products ({products.length})
+                                </h3>
+                                <select
+                                    className="h-9 rounded-lg border bg-background px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 appearance-none bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwb2x5bGluZSBwb2ludHM9IjYgOSAxMiAxNSAxOCA5Ij48L3BvbHlsaW5lPjwvc3ZnPg==')] bg-no-repeat bg-[right_0.5rem_center] bg-[length:0.8rem_0.8rem] pr-8 min-w-[140px]"
+                                    value={filterCategory}
+                                    onChange={(e) => setFilterCategory(e.target.value)}
+                                >
+                                    <option value="all">All Categories</option>
+                                    <option value="clothing">Clothing</option>
+                                    <option value="sneakers">Sneakers</option>
+                                    <option value="footwear">Footwear</option>
+                                    <option value="fragrances">Fragrances</option>
+                                    <option value="accessories">Accessories</option>
+                                    <option value="budget-finds">Budget Finds</option>
+                                </select>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {products
+                                    .filter(p => filterCategory === 'all' || p.category === filterCategory)
+                                    .map((product) => (
+                                        <div key={product._id} className="bg-card rounded-xl border p-4 flex gap-4 items-center">
+                                            <div className="w-16 h-16 rounded-lg overflow-hidden border bg-muted shrink-0">
+                                                <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <h4 className="font-bold text-sm truncate">{product.name}</h4>
+                                                <p className="text-xs text-muted-foreground truncate">{product.category}</p>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={() => handleEditProduct(product)}
+                                                    className="h-8 w-8 p-0"
+                                                >
+                                                    <ImageIcon className="w-4 h-4" />
+                                                </Button>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={() => deleteProduct(product._id)}
+                                                    className="h-8 w-8 p-0 text-red-500 hover:text-red-600 hover:bg-red-50"
+                                                >
+                                                    <X className="w-4 h-4" />
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                {products.length === 0 && (
+                                    <p className="text-muted-foreground text-center py-8 col-span-2">No products added yet.</p>
+                                )}
+                            </div>
+                        </div>
                     </div>
-                ) : (
+                ) : activeTab === 'deals' ? (
                     <div className="space-y-8">
                         <div className="bg-card rounded-2xl border shadow-sm p-8 bg-muted/30">
                             <h1 className="text-2xl font-semibold text-foreground flex items-center gap-3">
@@ -484,6 +740,229 @@ export default function AdminPage() {
                                         >
                                             Update Slot {deal.slot}
                                         </Button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                ) : (
+                    <div className="space-y-12">
+                        <div className="bg-card rounded-2xl border shadow-sm p-8 bg-muted/30">
+                            <h1 className="text-2xl font-semibold text-foreground flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+                                    <ImageIcon className="w-6 h-6" />
+                                </div>
+                                Manage Hero Section
+                            </h1>
+                            <p className="text-muted-foreground mt-2">
+                                Add, update, or remove slides from the homepage hero carousel.
+                            </p>
+                            {heroSlides.length === 0 && (
+                                <div className="mt-6 p-4 bg-primary/5 border border-primary/20 rounded-xl flex items-center justify-between gap-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+                                            <Upload className="w-4 h-4" />
+                                        </div>
+                                        <div className="text-sm">
+                                            <p className="font-semibold">Import Original Slides</p>
+                                            <p className="text-muted-foreground">Start by importing the 4 slides that were previously hardcoded.</p>
+                                        </div>
+                                    </div>
+                                    <Button size="sm" onClick={importOriginalSlides} disabled={isSubmitting}>
+                                        Import Now
+                                    </Button>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="bg-card rounded-2xl border shadow-sm overflow-hidden p-8">
+                            <h3 className="text-lg font-semibold mb-6 flex items-center gap-2">
+                                <Plus className="w-5 h-5" />
+                                {editingHero ? 'Edit Slide' : 'Add New Slide'}
+                            </h3>
+                            <form onSubmit={handleHeroSubmit} className="space-y-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium">Title</label>
+                                        <Input
+                                            value={heroForm.title}
+                                            onChange={(e) => setHeroForm({ ...heroForm, title: e.target.value })}
+                                            placeholder="e.g. Elevated"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium">Subtitle</label>
+                                        <Input
+                                            value={heroForm.subtitle}
+                                            onChange={(e) => setHeroForm({ ...heroForm, subtitle: e.target.value })}
+                                            placeholder="e.g. Essentials"
+                                            required
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium">Description</label>
+                                    <Textarea
+                                        value={heroForm.description}
+                                        onChange={(e) => setHeroForm({ ...heroForm, description: e.target.value })}
+                                        placeholder="Describe the slide..."
+                                        required
+                                    />
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium">BG Color (Hex)</label>
+                                        <Input
+                                            value={heroForm.bg}
+                                            onChange={(e) => setHeroForm({ ...heroForm, bg: e.target.value })}
+                                            placeholder="#f4f7f9"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium">Button Text</label>
+                                        <Input
+                                            value={heroForm.buttonText}
+                                            onChange={(e) => setHeroForm({ ...heroForm, buttonText: e.target.value })}
+                                            placeholder="Discover Now"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium">Button Link</label>
+                                        <Input
+                                            value={heroForm.buttonLink}
+                                            onChange={(e) => setHeroForm({ ...heroForm, buttonLink: e.target.value })}
+                                            placeholder="#products-section"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center gap-6">
+                                    <div className="flex items-center gap-2">
+                                        <input
+                                            type="checkbox"
+                                            id="isTextOnly"
+                                            checked={heroForm.isTextOnly}
+                                            onChange={(e) => setHeroForm({ ...heroForm, isTextOnly: e.target.checked })}
+                                            className="w-4 h-4"
+                                        />
+                                        <label htmlFor="isTextOnly" className="text-sm font-medium">Text Only Slide</label>
+                                    </div>
+                                    <div className="flex-1 space-y-2">
+                                        <label className="text-sm font-medium">Order</label>
+                                        <Input
+                                            type="number"
+                                            value={heroForm.order}
+                                            onChange={(e) => setHeroForm({ ...heroForm, order: parseInt(e.target.value) })}
+                                            className="w-24"
+                                        />
+                                    </div>
+                                </div>
+
+                                {!heroForm.isTextOnly && (
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-medium">Hero Image (Optional but recommended)</label>
+                                        {heroForm.image ? (
+                                            <div className="relative aspect-video rounded-xl overflow-hidden border w-full max-w-sm">
+                                                <img src={heroForm.image} alt="Preview" className="w-full h-full object-contain bg-muted" />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setHeroForm({ ...heroForm, image: '' })}
+                                                    className="absolute top-2 right-2 p-1 bg-black/50 text-white rounded-full"
+                                                >
+                                                    <X className="w-4 h-4" />
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <label className="flex flex-col items-center justify-center aspect-video rounded-xl border-2 border-dashed border-muted-foreground/20 bg-muted/5 hover:bg-muted/10 transition-all cursor-pointer w-full max-w-sm">
+                                                <Upload className="w-6 h-6 mb-2" />
+                                                <span className="text-xs">Upload Hero Image</span>
+                                                <input
+                                                    type="file"
+                                                    className="hidden"
+                                                    accept="image/*"
+                                                    onChange={(e) => {
+                                                        const file = e.target.files?.[0]
+                                                        if (file) {
+                                                            const reader = new FileReader()
+                                                            reader.onloadend = () => setHeroForm({ ...heroForm, image: reader.result as string })
+                                                            reader.readAsDataURL(file)
+                                                        }
+                                                    }}
+                                                />
+                                            </label>
+                                        )}
+                                    </div>
+                                )}
+
+                                <div className="flex gap-4">
+                                    <Button type="submit" className="flex-1" disabled={isSubmitting}>
+                                        {heroForm._id ? 'Update Hero Slide' : 'Add Hero Slide'}
+                                    </Button>
+                                    {editingHero && (
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            onClick={() => {
+                                                setEditingHero(null)
+                                                setHeroForm({
+                                                    title: '',
+                                                    subtitle: '',
+                                                    description: '',
+                                                    image: '',
+                                                    bg: '#f4f7f9',
+                                                    buttonText: 'Discover Now',
+                                                    buttonLink: '',
+                                                    isTextOnly: false,
+                                                    order: heroSlides.length
+                                                })
+                                            }}
+                                        >
+                                            Cancel
+                                        </Button>
+                                    )}
+                                </div>
+                            </form>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+                            {heroSlides.map((slide) => (
+                                <div key={slide._id} className="bg-card rounded-2xl border shadow-sm overflow-hidden flex flex-col">
+                                    <div className="p-4 border-b bg-muted/10 flex items-center justify-between">
+                                        <h3 className="font-semibold">Order: {slide.order}</h3>
+                                        <div className="flex gap-2">
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => {
+                                                    setEditingHero(slide)
+                                                    setHeroForm(slide)
+                                                }}
+                                            >
+                                                Edit
+                                            </Button>
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                                                onClick={() => slide._id && deleteHeroSlide(slide._id)}
+                                            >
+                                                Delete
+                                            </Button>
+                                        </div>
+                                    </div>
+                                    <div className="p-4 flex gap-4 items-center">
+                                        {!slide.isTextOnly && slide.image && (
+                                            <div className="w-20 h-20 rounded-lg overflow-hidden border bg-muted shrink-0">
+                                                <img src={slide.image} alt={slide.title} className="w-full h-full object-contain" />
+                                            </div>
+                                        )}
+                                        <div className="flex-1 min-w-0">
+                                            <p className="font-bold text-sm truncate">{slide.title} {slide.subtitle}</p>
+                                            <p className="text-xs text-muted-foreground line-clamp-1">{slide.description}</p>
+                                        </div>
                                     </div>
                                 </div>
                             ))}

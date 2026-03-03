@@ -30,7 +30,46 @@ export default function Hero({ searchQuery, setSearchQuery }: HeroProps) {
     }
   }
 
-  const slides = [
+  const [slides, setSlides] = useState<any[]>([])
+
+  const fetchSlides = useCallback(async () => {
+    try {
+      const res = await fetch('/api/hero')
+      if (res.ok) {
+        const data = await res.json()
+        if (data.length > 0) {
+          const formattedSlides = data.map((slide: any) => ({
+            ...slide,
+            id: slide._id,
+            action: () => {
+              if (slide.buttonLink?.startsWith('#')) {
+                const element = document.getElementById(slide.buttonLink.substring(1))
+                if (element) {
+                  const headerOffset = 100
+                  const elementPosition = element.getBoundingClientRect().top
+                  const offsetPosition = elementPosition + window.pageYOffset - headerOffset
+                  window.scrollTo({ top: offsetPosition, behavior: 'smooth' })
+                }
+              } else if (slide.buttonLink) {
+                window.open(slide.buttonLink, '_blank')
+              }
+            }
+          }))
+          setSlides(formattedSlides)
+        } else {
+          // Fallback to default slides if no slides in DB
+          setSlides(defaultSlides)
+        }
+      } else {
+        setSlides(defaultSlides)
+      }
+    } catch (error) {
+      console.error('Failed to fetch slides', error)
+      setSlides(defaultSlides)
+    }
+  }, [])
+
+  const defaultSlides = [
     {
       id: 1,
       title: "Elevated",
@@ -52,44 +91,29 @@ export default function Hero({ searchQuery, setSearchQuery }: HeroProps) {
       action: () => {
         window.open('https://amzn.to/4smffny', '_blank')
       }
-    },
-    {
-      id: 3,
-      title: "Follow Us",
-      subtitle: "On Insta",
-      description: "Get daily style inspiration and behind-the-scenes content on our social feed.",
-      image: "/instagram-follow.png",
-      bg: "#f9f4fd",
-      buttonText: "@dwvfinds_official",
-      icon: <Instagram className="mr-2 h-4 w-4" />,
-      action: () => {
-        window.open('https://www.instagram.com/dwvfinds_official?igsh=MWxlaTlqazBicWMzMQ==', '_blank')
-      }
-    },
-    {
-      id: 4,
-      title: "Finds that",
-      subtitle: "Fits you",
-      description: "Curated styles tailored to your unique personality. Discover the fashion that truly speaks to you.",
-      bg: "#ffffff",
-      buttonText: "Explore Collection",
-      isTextOnly: true,
-      action: scrollToProducts
     }
   ]
 
   const nextSlide = useCallback(() => {
+    if (slides.length === 0) return
     setActiveSlide((prev) => (prev + 1) % slides.length)
   }, [slides.length])
 
   const prevSlide = () => {
+    if (slides.length === 0) return
     setActiveSlide((prev) => (prev - 1 + slides.length) % slides.length)
   }
 
   useEffect(() => {
-    const timer = setInterval(nextSlide, 6000)
-    return () => clearInterval(timer)
-  }, [nextSlide])
+    fetchSlides()
+  }, [fetchSlides])
+
+  useEffect(() => {
+    if (slides.length > 0) {
+      const timer = setInterval(nextSlide, 6000)
+      return () => clearInterval(timer)
+    }
+  }, [nextSlide, slides.length])
 
   useEffect(() => {
     const storedUser = localStorage.getItem('dv_user')
