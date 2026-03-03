@@ -9,6 +9,7 @@ import Hero from '@/components/hero'
 
 import RatingSection from '@/components/rating-section'
 import Footer from '@/components/footer'
+import DealOfTheDay from '@/components/deal-of-the-day'
 import { toast } from 'sonner'
 
 export interface Product {
@@ -150,6 +151,9 @@ export default function Home() {
       />
       {/* Hero Section */}
       <Hero />
+
+      {/* Deal of the Day Section */}
+      <DealOfTheDay />
 
       {/* Discovery Header */}
       <div className="bg-white/80 backdrop-blur-md border-b">
