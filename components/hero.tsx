@@ -79,13 +79,34 @@ export default function Hero() {
 
   return (
     <div className="flex flex-col min-h-screen">
+      {/* Moving Marquee to Top */}
+      <div className="fixed top-0 left-0 right-0 z-[110] bg-red-600 py-1 sm:py-2 overflow-hidden shadow-sm">
+        <div className="flex whitespace-nowrap animate-marquee">
+          {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+            <div key={i} className="flex items-center mx-4">
+              <span className="text-white font-bold text-[10px] sm:text-xs uppercase tracking-widest">
+                DEAL OF THE DAY • DwV
+              </span>
+            </div>
+          ))}
+          {/* Duplicate for seamless loop */}
+          {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+            <div key={`dup-${i}`} className="flex items-center mx-4">
+              <span className="text-white font-bold text-[10px] sm:text-xs uppercase tracking-widest">
+                DEAL OF THE DAY • DwV
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
         onSuccess={(newUser) => setUser(newUser)}
       />
-      {/* Redesigned Header - Now Fixed */}
-      <nav className="fixed top-0 left-0 right-0 z-[100] px-3 sm:px-6 py-3 sm:py-4">
+      {/* Redesigned Header - Now Offset by Marquee */}
+      <nav className="fixed top-6 sm:top-8 left-0 right-0 z-[100] px-3 sm:px-6 py-2">
         <div className="max-w-7xl mx-auto bg-white/70 backdrop-blur-xl border border-white/20 px-4 sm:px-6 py-2 sm:py-3 flex items-center justify-between rounded-full shadow-2xl shadow-gray-200/50">
           {/* Left: Search — hidden on mobile */}
           <div className="hidden sm:flex items-center group">
@@ -152,7 +173,7 @@ export default function Hero() {
         {slides.map((slide, index) => (
           <div
             key={slide.id}
-            className={`absolute inset-0 transition-all duration-1000 ease-in-out flex items-center justify-center py-16 sm:py-12 px-4 sm:px-6 ${index === activeSlide ? 'opacity-100 z-10 scale-100' : 'opacity-0 z-0 scale-95 pointer-events-none'
+            className={`absolute inset-0 transition-all duration-1000 ease-in-out flex items-center justify-center pt-32 sm:pt-40 pb-16 sm:pb-12 px-4 sm:px-6 ${index === activeSlide ? 'opacity-100 z-10 scale-100' : 'opacity-0 z-0 scale-95 pointer-events-none'
               }`}
             style={{ backgroundColor: slide.bg }}
           >
