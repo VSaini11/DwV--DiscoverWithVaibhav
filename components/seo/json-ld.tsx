@@ -8,6 +8,7 @@ export function JSONLD() {
         '@context': 'https://schema.org',
         '@type': 'WebSite',
         'name': siteName,
+        'alternateName': 'DiscoverWithVaibhav',
         'url': siteUrl,
     }
 

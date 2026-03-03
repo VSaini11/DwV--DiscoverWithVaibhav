@@ -130,25 +130,8 @@ export default function Home() {
     window.open(url, '_blank')
   }
 
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'WebSite',
-    name: 'DwV - DiscoverWithVaibhav',
-    url: 'https://dwv-brand.vercel.app/',
-    description: 'DwV is a curated men’s style discovery platform for trending outfits and fragrances. Handpicked aesthetic styles to help you find the best fashion in one place.',
-    potentialAction: {
-      '@type': 'SearchAction',
-      target: 'https://dwv-brand.vercel.app/?query={search_term_string}',
-      'query-input': 'required name=search_term_string',
-    },
-  }
-
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
       {/* Hero Section */}
       <Hero
         searchQuery={searchQuery}

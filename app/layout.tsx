@@ -11,6 +11,7 @@ const _playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playf
 export const metadata: Metadata = {
   title: 'DwV - Men\'s Style & Fragrance Discovery',
   description: 'DwV is a curated men’s style discovery platform for trending outfits and fragrances. Handpicked aesthetic styles to help you find the best fashion in one place.',
+  applicationName: 'DwV',
   keywords: ['DwV', 'DiscoverWithVaibhav', 'men\'s style discovery', 'trending outfits for men', 'men\'s fragrance curation', 'menswear trends', 'fashion discovery platform', 'curated fashion outfits', 'best fragrances for men', 'Pinterest fashion for men', 'aesthetic outfits for guys'],
   authors: [{ name: 'Vaibhav' }],
   metadataBase: new URL('https://dwv-brand.vercel.app/'),
@@ -56,11 +57,13 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
+      { url: '/icon-512x512.png', sizes: '512x512', type: 'image/png' },
       { url: '/logo.svg', type: 'image/svg+xml' },
       { url: '/icon-light-32x32.png', sizes: '32x32', type: 'image/png', media: '(prefers-color-scheme: light)' },
       { url: '/icon-dark-32x32.png', sizes: '32x32', type: 'image/png', media: '(prefers-color-scheme: dark)' },
     ],
     apple: [
+      { url: '/apple-icon.png', sizes: '180x180', type: 'image/png' },
       { url: '/logo.svg', type: 'image/svg+xml' },
     ],
   },
