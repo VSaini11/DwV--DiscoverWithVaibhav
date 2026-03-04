@@ -20,6 +20,7 @@ export interface Product {
   category: string
   pinterestUrl: string
   isTrending: boolean
+  badge?: 'none' | 'trending' | 'dwv-choice'
   createdAt: string
 }
 
@@ -212,11 +213,18 @@ export default function Home() {
                       alt={product.name}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
                     />
-                    {product.isTrending && (
-                      <div className="absolute top-3 right-3 bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-semibold">
+                    {product.badge && product.badge !== 'none' ? (
+                      <div className={`absolute top-3 right-3 px-3 py-1 rounded-full text-[10px] font-bold ${product.badge === 'dwv-choice'
+                        ? 'bg-red-600 text-white'
+                        : 'bg-black text-white'
+                        }`}>
+                        {product.badge === 'dwv-choice' ? 'DWV Choice' : 'Trending'}
+                      </div>
+                    ) : product.isTrending ? (
+                      <div className="absolute top-3 right-3 bg-primary text-primary-foreground px-3 py-1 rounded-full text-[10px] font-bold uppercase shadow-sm">
                         Trending
                       </div>
-                    )}
+                    ) : null}
                   </div>
 
                   <div className="p-3 sm:p-4 space-y-2 sm:space-y-3 flex-1 flex flex-col">
@@ -262,11 +270,18 @@ export default function Home() {
                         alt={product.name}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
                       />
-                      {product.isTrending && (
-                        <div className="absolute top-3 right-3 bg-primary text-primary-foreground px-3 py-1 rounded-full text-xs font-semibold">
+                      {product.badge && product.badge !== 'none' ? (
+                        <div className={`absolute top-3 right-3 px-3 py-1 rounded-full text-[10px] font-bold ${product.badge === 'dwv-choice'
+                          ? 'bg-red-600 text-white'
+                          : 'bg-black text-white'
+                          }`}>
+                          {product.badge === 'dwv-choice' ? 'DWV Choice' : 'Trending'}
+                        </div>
+                      ) : product.isTrending ? (
+                        <div className="absolute top-3 right-3 bg-primary text-primary-foreground px-3 py-1 rounded-full text-[10px] font-bold uppercase shadow-sm">
                           Trending
                         </div>
-                      )}
+                      ) : null}
                     </div>
 
                     <div className="p-3 sm:p-4 space-y-2 sm:space-y-3 flex-1 flex flex-col">

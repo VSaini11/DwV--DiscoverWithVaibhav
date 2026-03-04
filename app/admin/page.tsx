@@ -27,6 +27,7 @@ interface Product {
     image: string
     pinterestUrl: string
     isTrending: boolean
+    badge: 'none' | 'trending' | 'dwv-choice'
 }
 
 interface HeroSlide {
@@ -80,7 +81,8 @@ export default function AdminPage() {
         description: '',
         category: '',
         pinterestUrl: '',
-        isTrending: false
+        isTrending: false,
+        badge: 'none' as 'none' | 'trending' | 'dwv-choice'
     })
 
     useEffect(() => {
@@ -253,7 +255,8 @@ export default function AdminPage() {
                 description: '',
                 category: '',
                 pinterestUrl: '',
-                isTrending: false
+                isTrending: false,
+                badge: 'none'
             })
             setImagePreview(null)
             setEditingProduct(null)
@@ -292,7 +295,8 @@ export default function AdminPage() {
             description: product.description,
             category: product.category,
             pinterestUrl: product.pinterestUrl,
-            isTrending: product.isTrending
+            isTrending: product.isTrending,
+            badge: product.badge || 'none'
         })
         setImagePreview(product.image)
         window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -564,6 +568,36 @@ export default function AdminPage() {
                                 />
                             </div>
 
+                            <div className="space-y-4">
+                                <label className="text-sm font-medium flex items-center gap-2">
+                                    <Tag className="w-4 h-4 text-muted-foreground" />
+                                    Product Badge (Display Style)
+                                </label>
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                    <div
+                                        onClick={() => setFormData({ ...formData, badge: 'none' })}
+                                        className={`cursor-pointer p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${formData.badge === 'none' ? 'border-primary bg-primary/5' : 'border-muted hover:border-muted-foreground/20'}`}
+                                    >
+                                        <div className="w-full text-center py-1 rounded bg-muted text-[10px] font-bold uppercase text-muted-foreground">No Badge</div>
+                                        <span className="text-xs font-medium">Original View</span>
+                                    </div>
+                                    <div
+                                        onClick={() => setFormData({ ...formData, badge: 'trending' })}
+                                        className={`cursor-pointer p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${formData.badge === 'trending' ? 'border-primary bg-primary/5' : 'border-muted hover:border-muted-foreground/20'}`}
+                                    >
+                                        <div className="w-full text-center py-1 rounded bg-black text-white text-[10px] font-bold uppercase">Trending</div>
+                                        <span className="text-xs font-medium">Black & White</span>
+                                    </div>
+                                    <div
+                                        onClick={() => setFormData({ ...formData, badge: 'dwv-choice' })}
+                                        className={`cursor-pointer p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${formData.badge === 'dwv-choice' ? 'border-primary bg-primary/5' : 'border-muted hover:border-muted-foreground/20'}`}
+                                    >
+                                        <div className="w-full text-center py-1 rounded bg-red-600 text-white text-[10px] font-bold uppercase">DWV Choice</div>
+                                        <span className="text-xs font-medium">Red & White</span>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div className="pt-4">
                                 <Button
                                     type="submit"
@@ -584,7 +618,8 @@ export default function AdminPage() {
                                                 description: '',
                                                 category: '',
                                                 pinterestUrl: '',
-                                                isTrending: false
+                                                isTrending: false,
+                                                badge: 'none'
                                             })
                                             setImagePreview(null)
                                         }}

@@ -10,6 +10,7 @@ interface Product {
   category: string
   pinterestUrl: string
   isTrending: boolean
+  badge?: 'none' | 'trending' | 'dwv-choice'
 }
 
 interface ProductCardProps {
@@ -27,15 +28,24 @@ export default function ProductCard({ product, onViewStyle }: ProductCardProps) 
           alt={product.name}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
         />
-        
-        {/* Trending Badge */}
-        {product.isTrending && (
+
+        {/* Product Badges */}
+        {product.badge && product.badge !== 'none' ? (
           <div className="absolute top-3 right-3 z-10">
-            <span className="inline-block px-3 py-1 bg-primary text-primary-foreground text-xs font-semibold rounded-full">
+            <span className={`inline-block px-3 py-1 text-[10px] font-bold uppercase rounded-full ${product.badge === 'dwv-choice'
+              ? 'bg-red-600 text-white'
+              : 'bg-black text-white'
+              }`}>
+              {product.badge === 'dwv-choice' ? 'DWV Choice' : 'Trending'}
+            </span>
+          </div>
+        ) : product.isTrending ? (
+          <div className="absolute top-3 right-3 z-10">
+            <span className="inline-block px-3 py-1 bg-primary text-primary-foreground text-[10px] font-bold uppercase rounded-full shadow-sm">
               Trending
             </span>
           </div>
-        )}
+        ) : null}
       </div>
 
       {/* Content */}

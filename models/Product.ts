@@ -27,6 +27,11 @@ const ProductSchema = new mongoose.Schema({
         type: Boolean,
         default: true,
     },
+    badge: {
+        type: String,
+        enum: ['none', 'trending', 'dwv-choice'],
+        default: 'none',
+    },
     createdAt: {
         type: Date,
         default: Date.now,
