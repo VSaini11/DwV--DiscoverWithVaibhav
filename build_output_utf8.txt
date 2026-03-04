@@ -1,0 +1,162 @@
+﻿
+> discover-with-vaibhav@0.1.0 build
+> next build
+
+Γû▓ Next.js 16.1.6 (Turbopack)
+- Environments: .env.local, .env
+
+  Creating an optimized production build ...
+node.exe : 
+At C:\Users\vaibh\AppData\Roaming\npm\npm.ps1:24 char:5
++     & "node$exe"  "$basedir/node_modules/npm/bin/npm-cli.js" $args
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) [], RemoteExcept  
+  ion
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+> Build error occurred
+Error: Turbopack build failed with 3 errors:
+./components/hero.tsx:4:20
+Ecmascript file had an error
+[0m [90m 2 |[39m [36mimport[39m { [33mSearch[39m[33m,[39m 
+[33mUser[39m[33m,[39m [33mHeart[39m[33m,[39m 
+[33mShoppingBag[39m[33m,[39m [33mPhone[39m[33m,[39m 
+[33mMenu[39m[33m,[39m [33mLogOut[39m[33m,[39m 
+[33mUserCircle[39m[33m,[39m [33mChevronLeft[39m[33m,[39m 
+[33mChevronRight[39m[33m,[39m [33mInstagram[39m } [36mfrom[39m 
+[32m'lucide-react'[39m
+ [90m 3 |[39m [36mimport[39m { [33mButton[39m } [36mfrom[39m 
+[32m'@/components/ui/button'[39m
+[31m[1m>[22m[39m[90m 4 |[39m [36mimport[39m { 
+useState[33m,[39m useEffect[33m,[39m useCallback } [36mfrom[39m 
+[32m'react'[39m
+ [90m   |[39m                    [31m[1m^[22m[39m[31m[1m^[22m[
+39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m
+^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 5 |[39m [36mimport[39m [33mAuthModal[39m [36mfrom[39m 
+[32m'./auth-modal'[39m
+ [90m 6 |[39m [36mimport[39m { useRouter } [36mfrom[39m 
+[32m'next/navigation'[39m
+ [90m 7 |[39m [36mimport[39m [33mImage[39m [36mfrom[39m 
+[32m'next/image'[39m[0m
+
+You're importing a component that needs `useEffect`. This React Hook 
+only works in a Client Component. To fix, mark the file (or its parent) 
+with the `"use client"` directive.
+
+ Learn more: 
+https://nextjs.org/docs/app/api-reference/directives/use-client
+
+
+
+Import traces:
+  Server Component:
+    ./components/hero.tsx
+    ./app/page.tsx
+
+  Client Component Browser:
+    ./components/hero.tsx [Client Component Browser]
+    ./app/admin/page.tsx [Client Component Browser]
+    ./app/admin/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/hero.tsx [Client Component SSR]
+    ./app/admin/page.tsx [Client Component SSR]
+    ./app/admin/page.tsx [Server Component]
+
+
+./components/hero.tsx:6:10
+Ecmascript file had an error
+[0m [90m 4 |[39m [36mimport[39m { useState[33m,[39m 
+useEffect[33m,[39m useCallback } [36mfrom[39m [32m'react'[39m
+ [90m 5 |[39m [36mimport[39m [33mAuthModal[39m [36mfrom[39m 
+[32m'./auth-modal'[39m
+[31m[1m>[22m[39m[90m 6 |[39m [36mimport[39m { useRouter } 
+[36mfrom[39m [32m'next/navigation'[39m
+ [90m   |[39m          [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[
+1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39
+m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 7 |[39m [36mimport[39m [33mImage[39m [36mfrom[39m 
+[32m'next/image'[39m
+ [90m 8 |[39m
+ [90m 9 |[39m [36minterface[39m [33mHeroProps[39m {[0m
+
+You're importing a component that needs `useRouter`. This React Hook 
+only works in a Client Component. To fix, mark the file (or its parent) 
+with the `"use client"` directive.
+
+ Learn more: 
+https://nextjs.org/docs/app/api-reference/directives/use-client
+
+
+
+Import traces:
+  Server Component:
+    ./components/hero.tsx
+    ./app/page.tsx
+
+  Client Component Browser:
+    ./components/hero.tsx [Client Component Browser]
+    ./app/admin/page.tsx [Client Component Browser]
+    ./app/admin/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/hero.tsx [Client Component SSR]
+    ./app/admin/page.tsx [Client Component SSR]
+    ./app/admin/page.tsx [Server Component]
+
+
+./components/hero.tsx:4:10
+Ecmascript file had an error
+[0m [90m 2 |[39m [36mimport[39m { [33mSearch[39m[33m,[39m 
+[33mUser[39m[33m,[39m [33mHeart[39m[33m,[39m 
+[33mShoppingBag[39m[33m,[39m [33mPhone[39m[33m,[39m 
+[33mMenu[39m[33m,[39m [33mLogOut[39m[33m,[39m 
+[33mUserCircle[39m[33m,[39m [33mChevronLeft[39m[33m,[39m 
+[33mChevronRight[39m[33m,[39m [33mInstagram[39m } [36mfrom[39m 
+[32m'lucide-react'[39m
+ [90m 3 |[39m [36mimport[39m { [33mButton[39m } [36mfrom[39m 
+[32m'@/components/ui/button'[39m
+[31m[1m>[22m[39m[90m 4 |[39m [36mimport[39m { 
+useState[33m,[39m useEffect[33m,[39m useCallback } [36mfrom[39m 
+[32m'react'[39m
+ [90m   |[39m          [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[
+1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39
+m[31m[1m^[22m[39m[31m[1m^[22m[39m
+ [90m 5 |[39m [36mimport[39m [33mAuthModal[39m [36mfrom[39m 
+[32m'./auth-modal'[39m
+ [90m 6 |[39m [36mimport[39m { useRouter } [36mfrom[39m 
+[32m'next/navigation'[39m
+ [90m 7 |[39m [36mimport[39m [33mImage[39m [36mfrom[39m 
+[32m'next/image'[39m[0m
+
+You're importing a component that needs `useState`. This React Hook 
+only works in a Client Component. To fix, mark the file (or its parent) 
+with the `"use client"` directive.
+
+ Learn more: 
+https://nextjs.org/docs/app/api-reference/directives/use-client
+
+
+
+Import traces:
+  Server Component:
+    ./components/hero.tsx
+    ./app/page.tsx
+
+  Client Component Browser:
+    ./components/hero.tsx [Client Component Browser]
+    ./app/admin/page.tsx [Client Component Browser]
+    ./app/admin/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./components/hero.tsx [Client Component SSR]
+    ./app/admin/page.tsx [Client Component SSR]
+    ./app/admin/page.tsx [Server Component]
+
+
+    at <unknown> (./components/hero.tsx:4:20)
+    at <unknown> (./components/hero.tsx:6:10)
+    at <unknown> (./components/hero.tsx:4:10)
+Assertion failed: !(handle->flags & UV_HANDLE_CLOSING), file 
+c:\ws\deps\uv\src\win\async.c, line 76

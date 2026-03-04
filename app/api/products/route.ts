@@ -10,6 +10,8 @@ export async function GET(req: Request) {
         const { searchParams } = new URL(req.url)
         const category = searchParams.get('category')
         const query = searchParams.get('query')
+        const limit = parseInt(searchParams.get('limit') || '12')
+        const skip = parseInt(searchParams.get('skip') || '0')
 
         let filter: any = {}
         if (category && category !== 'all') {
@@ -22,8 +24,17 @@ export async function GET(req: Request) {
             ]
         }
 
-        const products = await Product.find(filter).sort({ createdAt: -1 })
-        return NextResponse.json(products)
+        const total = await Product.countDocuments(filter)
+        const products = await Product.find(filter)
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit)
+
+        return NextResponse.json({
+            products,
+            total,
+            hasMore: skip + products.length < total
+        })
     } catch (error) {
         console.error('Fetch products error:', error)
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })

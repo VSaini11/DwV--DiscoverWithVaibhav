@@ -1,19 +1,24 @@
+'use client'
+
 import Link from 'next/link'
 import { Search, User, Heart, ShoppingBag, Phone, Menu, LogOut, UserCircle, ChevronLeft, ChevronRight, Instagram } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useState, useEffect, useCallback } from 'react'
 import AuthModal from './auth-modal'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 
 interface HeroProps {
   searchQuery?: string
   setSearchQuery?: (query: string) => void
 }
+const marqueeItems = [1, 2, 3, 4, 5, 6, 7, 8]
 
 export default function Hero({ searchQuery, setSearchQuery }: HeroProps) {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
   const [user, setUser] = useState<any>(null)
   const [activeSlide, setActiveSlide] = useState(0)
+  const [isMounted, setIsMounted] = useState(false)
   const router = useRouter()
 
   const scrollToProducts = () => {
@@ -105,6 +110,7 @@ export default function Hero({ searchQuery, setSearchQuery }: HeroProps) {
   }
 
   useEffect(() => {
+    setIsMounted(true)
     fetchSlides()
   }, [fetchSlides])
 
@@ -137,12 +143,14 @@ export default function Hero({ searchQuery, setSearchQuery }: HeroProps) {
     }
   }
 
+  if (!isMounted) return <div className="min-h-screen bg-background" />
+
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="relative min-h-screen bg-background flex flex-col">
       {/* Moving Marquee to Top */}
       <div className="fixed top-0 left-0 right-0 z-[110] bg-red-600 py-1 sm:py-2 overflow-hidden shadow-sm">
         <div className="flex whitespace-nowrap animate-marquee">
-          {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+          {marqueeItems.map((i) => (
             <div key={i} className="flex items-center mx-4">
               <span className="text-white font-bold text-[10px] sm:text-xs uppercase tracking-widest">
                 DEAL OF THE DAY • DwV
@@ -150,7 +158,7 @@ export default function Hero({ searchQuery, setSearchQuery }: HeroProps) {
             </div>
           ))}
           {/* Duplicate for seamless loop */}
-          {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+          {marqueeItems.map((i) => (
             <div key={`dup-${i}`} className="flex items-center mx-4">
               <span className="text-white font-bold text-[10px] sm:text-xs uppercase tracking-widest">
                 DEAL OF THE DAY • DwV
@@ -221,11 +229,14 @@ export default function Hero({ searchQuery, setSearchQuery }: HeroProps) {
               </div>
             )}
 
-            <Link href="/likes">
-              <Button variant="ghost" size="icon" className="text-gray-600 hover:text-red-500 hover:bg-red-50 h-8 w-8 sm:h-9 sm:w-9 rounded-full transition-colors">
-                <Heart className="w-4 h-4" />
-              </Button>
-            </Link>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-gray-600 hover:text-red-500 hover:bg-red-50 h-8 w-8 sm:h-9 sm:w-9 rounded-full transition-colors"
+              onClick={() => router.push('/likes')}
+            >
+              <Heart className="w-4 h-4" />
+            </Button>
           </div>
         </div>
       </nav>
@@ -300,10 +311,13 @@ export default function Hero({ searchQuery, setSearchQuery }: HeroProps) {
                 >
                   <div className="relative w-full max-w-[320px] sm:max-w-[480px] lg:max-w-[600px] aspect-[4/5] lg:aspect-square">
                     {'image' in slide && (
-                      <img
+                      <Image
                         src={slide.image as string}
                         alt={slide.subtitle}
-                        className="w-full h-full object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-700"
+                        fill
+                        priority={index === 0}
+                        className="object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-700"
+                        sizes="(max-width: 640px) 320px, (max-width: 1024px) 480px, 600px"
                       />
                     )}
                   </div>

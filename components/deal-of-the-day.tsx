@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import Image from 'next/image'
 import {
     Carousel,
     CarouselContent,
@@ -20,11 +21,17 @@ interface Deal {
     link: string
 }
 
-export default function DealOfTheDay() {
-    const [deals, setDeals] = useState<Deal[]>([])
-    const [loading, setLoading] = useState(true)
+interface DealOfTheDayProps {
+    initialDeals?: Deal[]
+}
+
+export default function DealOfTheDay({ initialDeals = [] }: DealOfTheDayProps) {
+    const [deals, setDeals] = useState<Deal[]>(initialDeals)
+    const [loading, setLoading] = useState(initialDeals.length === 0)
 
     useEffect(() => {
+        if (initialDeals.length > 0) return
+
         fetch('/api/deals')
             .then((res) => res.json())
             .then((data) => {
@@ -37,7 +44,7 @@ export default function DealOfTheDay() {
                 console.error('Failed to fetch deals', err)
                 setLoading(false)
             })
-    }, [])
+    }, [initialDeals])
 
     if (loading) {
         return (
@@ -55,49 +62,49 @@ export default function DealOfTheDay() {
     if (deals.length === 0) return null
 
     return (
-        <section className="max-w-7xl mx-auto px-0 sm:px-6 lg:px-8 py-12 sm:py-24">
-            <div className="px-4 sm:px-0">
-                <div className="flex items-center justify-between mb-8 sm:mb-16">
-                    <div className="space-y-1">
-                        <h2 className="text-3xl sm:text-5xl md:text-6xl font-playfair font-black tracking-tight text-foreground italic leading-tight">
-                            Deal of the <span className="text-red-600 not-italic">Day</span>
-                        </h2>
-                        <div className="h-1 w-12 sm:h-1.5 sm:w-24 bg-red-600 rounded-full" />
-                    </div>
+        <section className="w-full bg-background py-12 sm:py-24">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex flex-col items-start mb-8 sm:mb-16">
+                    <h2 className="text-3xl sm:text-5xl md:text-6xl font-playfair font-black tracking-tight text-foreground italic leading-tight text-left">
+                        Deal of the <span className="text-red-600 not-italic">Day</span>
+                    </h2>
+                    <div className="h-1 w-12 sm:h-1.5 sm:w-24 bg-red-600 rounded-full mt-2" />
                 </div>
 
                 <Carousel
                     opts={{
-                        align: 'center',
+                        align: 'start',
                         loop: true,
                     }}
                     className="w-full"
                 >
-                    <CarouselContent className="-ml-2 sm:-ml-6">
+                    <CarouselContent className="-ml-4 sm:-ml-6">
                         {deals.map((deal) => (
-                            <CarouselItem key={deal._id} className="pl-2 sm:pl-6 basis-[85%] sm:basis-[48%] lg:basis-[24%]">
+                            <CarouselItem key={deal._id} className="pl-4 sm:pl-6 basis-[85%] sm:basis-1/2 lg:basis-1/4">
                                 <div
-                                    className="group relative w-full max-w-[320px] mx-auto aspect-[4/5] rounded-3xl overflow-hidden cursor-pointer shadow-md hover:shadow-xl transition-all duration-500 border border-black/[0.03] bg-[#fdfdfd]"
+                                    className="group relative w-full aspect-[4/5] rounded-[2rem] overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl transition-all duration-500 border border-black/[0.03] bg-white"
                                     onClick={() => window.open(deal.link, '_blank')}
                                 >
-                                    <img
+                                    <Image
                                         src={deal.image}
                                         alt={deal.title}
-                                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                        fill
+                                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                                        sizes="(max-width: 640px) 85vw, (max-width: 1024px) 50vw, 25vw"
                                     />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-100 sm:opacity-80 sm:group-hover:opacity-90 transition-opacity" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-90 transition-opacity" />
 
-                                    <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-8 transform translate-y-0 transition-transform duration-500">
-                                        <h3 className="text-sm sm:text-2xl font-bold text-white mb-0.5 sm:mb-2 line-clamp-1 sm:line-clamp-2 drop-shadow-md">
+                                    <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8">
+                                        <h3 className="text-lg sm:text-2xl font-bold text-white mb-2 sm:mb-3 line-clamp-2 drop-shadow-xl leading-tight">
                                             {deal.title}
                                         </h3>
-                                        <div className="flex items-center gap-1 text-red-500 font-bold text-[9px] sm:text-sm uppercase tracking-widest opacity-100 transition-opacity">
+                                        <div className="flex items-center gap-2 text-red-500 font-black text-xs sm:text-sm uppercase tracking-[0.2em]">
                                             <span>Shop Now</span>
-                                            <ExternalLink className="w-2.5 h-2.5 sm:w-4 sm:h-4" />
+                                            <ExternalLink className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                                         </div>
                                     </div>
 
-                                    <div className="absolute top-2 right-2 bg-red-600 text-white px-2 py-0.5 rounded-full text-[8px] sm:text-[10px] font-black uppercase tracking-widest shadow-lg border border-red-500/50">
+                                    <div className="absolute top-5 right-5 bg-red-600 text-white px-4 py-1.5 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-widest shadow-xl border border-white/10">
                                         Exclusive
                                     </div>
                                 </div>
