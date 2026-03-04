@@ -3,6 +3,7 @@ import dbConnect from '@/lib/mongodb'
 import Product from '@/models/Product'
 import Subscriber from '@/models/Subscriber'
 import { transporter, buildProductNotificationEmail } from '@/lib/mailer'
+import { revalidatePath } from 'next/cache'
 
 export async function GET(req: Request) {
     try {
@@ -66,6 +67,7 @@ export async function POST(req: Request) {
             console.log(`[DwV] Notified ${subscribers.length} subscriber(s) about: ${product.name}`)
         }).catch((err) => console.error('[DwV] Subscriber notification failed:', err))
 
+        revalidatePath('/')
         return NextResponse.json(product, { status: 201 })
     } catch (error) {
         console.error('Create product error:', error)
@@ -88,6 +90,7 @@ export async function PUT(req: Request) {
             return NextResponse.json({ error: 'Product not found' }, { status: 404 })
         }
 
+        revalidatePath('/')
         return NextResponse.json(product)
     } catch (error) {
         console.error('Update product error:', error)
@@ -110,6 +113,7 @@ export async function DELETE(req: Request) {
             return NextResponse.json({ error: 'Product not found' }, { status: 404 })
         }
 
+        revalidatePath('/')
         return NextResponse.json({ message: 'Product deleted successfully' })
     } catch (error) {
         console.error('Delete product error:', error)

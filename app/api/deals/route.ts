@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import dbConnect from '@/lib/mongodb'
 import Deal from '@/models/Deal'
+import { revalidatePath } from 'next/cache'
 
 export async function GET() {
     try {
@@ -28,6 +29,7 @@ export async function POST(request: Request) {
             { upsert: true, new: true, runValidators: true }
         )
 
+        revalidatePath('/')
         return NextResponse.json(deal)
     } catch (error: any) {
         return NextResponse.json({ error: error.message }, { status: 500 })

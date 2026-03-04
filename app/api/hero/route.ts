@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import HeroSlide from '@/models/HeroSlide'
 import dbConnect from '@/lib/mongodb'
+import { revalidatePath } from 'next/cache'
 
 export async function GET() {
     try {
@@ -24,6 +25,7 @@ export async function POST(req: Request) {
         } else {
             // Create new slide
             const newSlide = await HeroSlide.create(body)
+            revalidatePath('/')
             return NextResponse.json(newSlide)
         }
     } catch (error: any) {
@@ -39,6 +41,7 @@ export async function DELETE(req: Request) {
         if (!id) return NextResponse.json({ error: 'ID required' }, { status: 400 })
 
         await HeroSlide.findByIdAndDelete(id)
+        revalidatePath('/')
         return NextResponse.json({ success: true })
     } catch (error: any) {
         return NextResponse.json({ error: error.message }, { status: 500 })
@@ -93,6 +96,7 @@ export async function PATCH() {
 
         await HeroSlide.deleteMany({}) // Clear existing if any
         await HeroSlide.insertMany(defaults)
+        revalidatePath('/')
         return NextResponse.json({ success: true })
     } catch (error: any) {
         return NextResponse.json({ error: error.message }, { status: 500 })
