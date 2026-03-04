@@ -95,13 +95,16 @@ export default function AdminPage() {
 
     const fetchProducts = async () => {
         try {
-            const res = await fetch('/api/products')
+            // Fetch more products for admin view to facilitate management
+            const res = await fetch('/api/products?limit=100')
             if (res.ok) {
                 const data = await res.json()
-                setProducts(data)
+                // The API now returns { products, total, hasMore }
+                setProducts(Array.isArray(data.products) ? data.products : [])
             }
         } catch (error) {
             console.error('Failed to fetch products', error)
+            setProducts([])
         }
     }
 
@@ -651,7 +654,7 @@ export default function AdminPage() {
                                 </select>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {products
+                                {(Array.isArray(products) ? products : [])
                                     .filter(p => filterCategory === 'all' || p.category === filterCategory)
                                     .map((product) => (
                                         <div key={product._id} className="bg-card rounded-xl border p-4 flex gap-4 items-center">
