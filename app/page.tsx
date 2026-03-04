@@ -5,6 +5,7 @@ import DealOfTheDay from '@/components/deal-of-the-day'
 import dbConnect from '@/lib/mongodb'
 import Product from '@/models/Product'
 import Deal from '@/models/Deal'
+import HeroSlide from '@/models/HeroSlide'
 import ProductExplore from '@/components/product-explore'
 import { Suspense } from 'react'
 import { ProductSkeleton, DealSkeleton } from '@/components/skeletons'
@@ -23,25 +24,27 @@ export interface Product {
 
 async function getInitialData() {
   await dbConnect()
-  const [productsData, dealsData] = await Promise.all([
+  const [productsData, dealsData, slidesData] = await Promise.all([
     Product.find({}).sort({ createdAt: -1 }).limit(12).lean(),
-    Deal.find({}).sort({ slot: 1 }).lean()
+    Deal.find({}).sort({ slot: 1 }).lean(),
+    HeroSlide.find({}).sort({ order: 1 }).lean()
   ])
 
   return {
     products: JSON.parse(JSON.stringify(productsData)),
     deals: JSON.parse(JSON.stringify(dealsData)),
+    slides: JSON.parse(JSON.stringify(slidesData)),
     total: await Product.countDocuments({})
   }
 }
 
 export default async function Home() {
-  const { products, deals, total } = await getInitialData()
+  const { products, deals, slides, total } = await getInitialData()
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Hero Section */}
-      <Hero />
+      <Hero initialSlides={slides} />
 
       {/* Deal of the Day Section */}
       <Suspense fallback={<div className="max-w-7xl mx-auto px-4 py-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"><DealSkeleton /><DealSkeleton /><DealSkeleton /><DealSkeleton /></div>}>

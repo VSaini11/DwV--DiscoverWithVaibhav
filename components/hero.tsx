@@ -11,10 +11,11 @@ import Image from 'next/image'
 interface HeroProps {
   searchQuery?: string
   setSearchQuery?: (query: string) => void
+  initialSlides?: any[]
 }
 const marqueeItems = [1, 2, 3, 4, 5, 6, 7, 8]
 
-export default function Hero({ searchQuery, setSearchQuery }: HeroProps) {
+export default function Hero({ searchQuery, setSearchQuery, initialSlides }: HeroProps) {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
   const [user, setUser] = useState<any>(null)
   const [activeSlide, setActiveSlide] = useState(0)
@@ -35,7 +36,36 @@ export default function Hero({ searchQuery, setSearchQuery }: HeroProps) {
     }
   }
 
-  const [slides, setSlides] = useState<any[]>([])
+  const [slides, setSlides] = useState<any[]>(() => {
+    if (initialSlides && initialSlides.length > 0) {
+      return initialSlides.map(slide => ({
+        ...slide,
+        id: slide._id || slide.id
+      }))
+    }
+    return []
+  })
+
+  // Function to get the action for a slide
+  const getSlideAction = useCallback((slide: any) => {
+    return () => {
+      if (slide.buttonLink?.startsWith('#')) {
+        const element = document.getElementById(slide.buttonLink.substring(1))
+        if (element) {
+          const headerOffset = 100
+          const elementPosition = element.getBoundingClientRect().top
+          const offsetPosition = elementPosition + (typeof window !== 'undefined' ? window.pageYOffset : 0) - headerOffset
+          if (typeof window !== 'undefined') {
+            window.scrollTo({ top: offsetPosition, behavior: 'smooth' })
+          }
+        }
+      } else if (slide.buttonLink) {
+        if (typeof window !== 'undefined') {
+          window.open(slide.buttonLink, '_blank')
+        }
+      }
+    }
+  }, [])
 
   const fetchSlides = useCallback(async () => {
     try {
@@ -46,31 +76,12 @@ export default function Hero({ searchQuery, setSearchQuery }: HeroProps) {
           const formattedSlides = data.map((slide: any) => ({
             ...slide,
             id: slide._id,
-            action: () => {
-              if (slide.buttonLink?.startsWith('#')) {
-                const element = document.getElementById(slide.buttonLink.substring(1))
-                if (element) {
-                  const headerOffset = 100
-                  const elementPosition = element.getBoundingClientRect().top
-                  const offsetPosition = elementPosition + window.pageYOffset - headerOffset
-                  window.scrollTo({ top: offsetPosition, behavior: 'smooth' })
-                }
-              } else if (slide.buttonLink) {
-                window.open(slide.buttonLink, '_blank')
-              }
-            }
           }))
           setSlides(formattedSlides)
-        } else {
-          // Fallback to default slides if no slides in DB
-          setSlides(defaultSlides)
         }
-      } else {
-        setSlides(defaultSlides)
       }
     } catch (error) {
       console.error('Failed to fetch slides', error)
-      setSlides(defaultSlides)
     }
   }, [])
 
@@ -83,7 +94,7 @@ export default function Hero({ searchQuery, setSearchQuery }: HeroProps) {
       image: "/hero-image.png",
       bg: "#f4f7f9",
       buttonText: "Discover Now",
-      action: scrollToProducts
+      buttonLink: "#products-section"
     },
     {
       id: 2,
@@ -93,11 +104,16 @@ export default function Hero({ searchQuery, setSearchQuery }: HeroProps) {
       image: "/pick-of-the-week.jpg",
       bg: "#fdf8f6",
       buttonText: "Shop the Look",
-      action: () => {
-        window.open('https://amzn.to/4smffny', '_blank')
-      }
+      buttonLink: "https://amzn.to/4smffny"
     }
   ]
+
+  // Use default slides if no slides provided
+  useEffect(() => {
+    if (slides.length === 0) {
+      setSlides(defaultSlides)
+    }
+  }, [slides.length])
 
   const nextSlide = useCallback(() => {
     if (slides.length === 0) return
@@ -111,8 +127,9 @@ export default function Hero({ searchQuery, setSearchQuery }: HeroProps) {
 
   useEffect(() => {
     setIsMounted(true)
-    fetchSlides()
-  }, [fetchSlides])
+    // Optional: Refresh slides on client mounting if needed
+    // fetchSlides() 
+  }, [])
 
   useEffect(() => {
     if (slides.length > 0) {
@@ -143,11 +160,9 @@ export default function Hero({ searchQuery, setSearchQuery }: HeroProps) {
     }
   }
 
-  if (!isMounted) return <div className="min-h-screen bg-background" />
-
   return (
     <div className="relative min-h-screen bg-background flex flex-col">
-      {/* Moving Marquee to Top */}
+      {/* Moving Marquee to Top - SSR Safe */}
       <div className="fixed top-0 left-0 right-0 z-[110] bg-red-600 py-1 sm:py-2 overflow-hidden shadow-sm">
         <div className="flex whitespace-nowrap animate-marquee">
           {marqueeItems.map((i) => (
@@ -173,6 +188,7 @@ export default function Hero({ searchQuery, setSearchQuery }: HeroProps) {
         onClose={() => setIsAuthModalOpen(false)}
         onSuccess={(newUser) => setUser(newUser)}
       />
+
       {/* Redesigned Header - Now Offset by Marquee */}
       <nav className="fixed top-6 sm:top-8 left-0 right-0 z-[100] px-3 sm:px-6 py-2">
         <div className="max-w-7xl mx-auto bg-white/70 backdrop-blur-xl border border-white/20 px-4 sm:px-6 py-2 sm:py-3 flex items-center justify-between rounded-full shadow-2xl shadow-gray-200/50">
@@ -190,13 +206,13 @@ export default function Hero({ searchQuery, setSearchQuery }: HeroProps) {
 
           {/* Center: Logo — exact center on desktop via absolute, left on mobile */}
           <div className="sm:absolute sm:left-1/2 sm:-translate-x-1/2">
-            <span className="text-xl sm:text-2xl md:text-3xl font-serif font-light tracking-tighter text-gray-900 cursor-pointer text-center block">
+            <span className="text-xl sm:text-2xl md:text-3xl font-serif font-light tracking-tighter text-gray-900 cursor-pointer text-center block" onClick={() => router.push('/')}>
               <span className="font-bold italic text-red-600">DwV</span>
             </span>
           </div>
 
           <div className="flex items-center justify-end gap-1 sm:gap-2 md:gap-3">
-            {user ? (
+            {isMounted && user ? (
               <div className="flex items-center gap-1 sm:gap-2">
                 <Button variant="ghost" className="hidden lg:flex gap-2 text-sm font-medium text-gray-600 rounded-full">
                   <UserCircle className="w-4 h-4" />
@@ -211,7 +227,7 @@ export default function Hero({ searchQuery, setSearchQuery }: HeroProps) {
                   <LogOut className="w-4 h-4" />
                 </Button>
               </div>
-            ) : (
+            ) : isMounted ? (
               <div className="flex items-center gap-1 sm:gap-2">
                 <Button
                   variant="ghost"
@@ -227,6 +243,8 @@ export default function Hero({ searchQuery, setSearchQuery }: HeroProps) {
                   Sign Up
                 </Button>
               </div>
+            ) : (
+              <div className="w-20" /> /* Placeholder while loading user state */
             )}
 
             <Button
@@ -241,7 +259,7 @@ export default function Hero({ searchQuery, setSearchQuery }: HeroProps) {
         </div>
       </nav>
 
-      {/* Hero Carousel Section */}
+      {/* Hero Carousel Section - SSR Enabled */}
       <section className="relative flex-1 overflow-hidden min-h-[500px] sm:min-h-[600px] lg:min-h-[700px] flex">
         {slides.map((slide, index) => (
           <div
@@ -294,7 +312,7 @@ export default function Hero({ searchQuery, setSearchQuery }: HeroProps) {
 
                 <div className={`pt-4 sm:pt-8 flex justify-center ${slide.isTextOnly ? '' : 'lg:justify-start'}`}>
                   <Button
-                    onClick={slide.action}
+                    onClick={getSlideAction(slide)}
                     className={`px-10 sm:px-12 py-7 sm:py-8 text-xs sm:text-sm font-bold transition-all rounded-none uppercase tracking-widest active:scale-95 group ${slide.isTextOnly ? 'bg-red-600 text-white hover:bg-black shadow-2xl shadow-red-200' : 'bg-black text-white hover:bg-gray-800'
                       }`}
                   >
@@ -310,7 +328,7 @@ export default function Hero({ searchQuery, setSearchQuery }: HeroProps) {
                     }`}
                 >
                   <div className="relative w-full max-w-[320px] sm:max-w-[480px] lg:max-w-[600px] aspect-[4/5] lg:aspect-square">
-                    {'image' in slide && (
+                    {slide.image && (
                       <Image
                         src={slide.image as string}
                         alt={slide.subtitle}
