@@ -7,6 +7,7 @@ import Product from '@/models/Product'
 import Deal from '@/models/Deal'
 import HeroSlide from '@/models/HeroSlide'
 import ProductExplore from '@/components/product-explore'
+import VideoAdSection from '@/components/video-ad-section'
 import { Suspense } from 'react'
 import { ProductSkeleton, DealSkeleton } from '@/components/skeletons'
 
@@ -45,6 +46,9 @@ export default async function Home() {
     <div className="min-h-screen bg-background flex flex-col">
       {/* Hero Section */}
       <Hero initialSlides={slides} />
+
+      {/* Video Ad Section */}
+      <VideoAdSection />
 
       {/* Deal of the Day Section */}
       <Suspense fallback={<div className="max-w-7xl mx-auto px-4 py-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"><DealSkeleton /><DealSkeleton /><DealSkeleton /><DealSkeleton /></div>}>

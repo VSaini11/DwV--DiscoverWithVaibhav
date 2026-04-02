@@ -21,6 +21,7 @@ export async function POST(req: Request) {
         if (body._id) {
             // Update existing slide
             const updatedSlide = await HeroSlide.findByIdAndUpdate(body._id, body, { new: true })
+            revalidatePath('/')
             return NextResponse.json(updatedSlide)
         } else {
             // Create new slide
