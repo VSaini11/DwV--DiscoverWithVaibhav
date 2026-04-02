@@ -55,8 +55,11 @@ export default function Footer() {
           {/* Brand Section */}
           <div className="md:col-span-1">
             <h3 className="text-xl font-bold mb-4 tracking-tight">DiscoverWithVaibhav</h3>
-            <p className="text-sm opacity-80 leading-relaxed max-w-xs">
+            <p className="text-sm opacity-80 leading-relaxed max-w-xs mb-4">
               Your curated fashion marketplace, powered by Pinterest trends. Elevating your style discovery.
+            </p>
+            <p className="text-sm opacity-80 font-medium">
+              For any queries contact : <a href="mailto:vaibhavsaini709@gmail.com" className="hover:text-white transition-colors underline underline-offset-2">vaibhavsaini709@gmail.com</a>
             </p>
           </div>
 
